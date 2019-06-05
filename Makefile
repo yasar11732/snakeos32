@@ -15,13 +15,13 @@ build/snakeos32.iso: build/snakeos32.bin grub.cfg
 	yes | cp build/snakeos32.bin build/isodir/boot
 	grub-mkrescue -o build/snakeos32.iso build/isodir
 
-build/c/%.o: c/%.c
+build/c/%.o: c/%.c h/kernel.h
 	mkdir -p build/c
-	$(CC) -c $^ -o $@ $(COMPILER_ARGS)
+	$(CC) -c $< -o $@ $(COMPILER_ARGS)
 
-build/s/%.o: s/%.s
+build/s/%.o: s/%.s h/kernel.h
 	mkdir -p build/s
-	$(CC) -c $^ -o $@ $(COMPILER_ARGS)
+	$(CC) -c $< -o $@ $(COMPILER_ARGS)
 
 build/snakeos32.bin: linker.ld $(OBJ)
 	$(CC) -T linker.ld -o $@ $(COMPILER_ARGS) $(OBJ) $(LINKER_ARGS) 

@@ -128,7 +128,7 @@ void terminal_writestring(const char* data)
 	terminal_write(data, strlen(data));
 }
 
-void bsod()
+void bsod(char *message)
 {
 	terminal_row = 0;
 	terminal_column = 0;
@@ -140,12 +140,18 @@ void bsod()
 			terminal_buffer[index] = vga_entry(' ', terminal_color);
 		}
 	}
+
+	terminal_writestring(message);
+	wait_forever();
 }
+
+extern void enable_interrupts();
 
 void kernel_main(void) 
 {
 	gdt_install();
 	idt_install();
+	
 	enable_interrupts();
 
 	/* Initialize terminal interface */
@@ -155,6 +161,9 @@ void kernel_main(void)
 	terminal_writestring("Hello, kernel World!\r\n");
 
     terminal_writestring("Hello, kernel World!\r\n");
+	
+	__asm__ ("mov $0,%ebx");
+	__asm__ ("div %ebx");
 
     terminal_writestring("Hello, kernel World!\r\n");
 
