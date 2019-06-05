@@ -1,32 +1,31 @@
 CC=/root/opt/cross/bin/i686-elf-gcc
-COMPILER_ARGS=-g -ffreestanding -O2 -nostdlib -Wall -Wextra
+COMPILER_ARGS=-I./h -g -ffreestanding -O2 -nostdlib -Wall -Wextra
 LINKER_ARGS=-lgcc
-OBJ=build/boot.o build/kernel.o build/gdt.o build/idt.o build/utilities.o
+SRCC=$(wildcard c/*.c)
+SRCS=$(wildcard s/*.s)
+COBJ=$(patsubst c/%.c,build/c/%.o,$(SRCC))
+SOBJ=$(patsubst s/%.s,build/s/%.o,$(SRCS))
 
+OBJ=$(COBJ)
+OBJ+=$(SOBJ)
+	
 build/snakeos32.iso: build/snakeos32.bin grub.cfg
 	mkdir -p build/isodir/boot/grub
 	yes | cp grub.cfg build/isodir/boot/grub
 	yes | cp build/snakeos32.bin build/isodir/boot
 	grub-mkrescue -o build/snakeos32.iso build/isodir
 
-build/boot.o: boot.s
+build/c/%.o: c/%.c
+	mkdir -p build/c
 	$(CC) -c $^ -o $@ $(COMPILER_ARGS)
 
-build/utilities.o: utilities.c
-	$(CC) -c $^ -o $@ $(COMPILER_ARGS)
-
-build/gdt.o: gdt.c
-	$(CC) -c $^ -o $@ $(COMPILER_ARGS)
-
-build/idt.o: idt.c
-	$(CC) -c $^ -o $@ $(COMPILER_ARGS)
-
-build/kernel.o: kernel.c
+build/s/%.o: s/%.s
+	mkdir -p build/s
 	$(CC) -c $^ -o $@ $(COMPILER_ARGS)
 
 build/snakeos32.bin: linker.ld $(OBJ)
 	$(CC) -T linker.ld -o $@ $(COMPILER_ARGS) $(OBJ) $(LINKER_ARGS) 
 	
 clean:
-	rm -f $(OBJ)
+	rm -vr build
 
