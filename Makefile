@@ -1,8 +1,7 @@
 CC=/root/opt/cross/bin/i686-elf-gcc
-AS=/root/opt/cross/bin/i686-elf-as
 COMPILER_ARGS=-g -ffreestanding -O2 -nostdlib -Wall -Wextra
 LINKER_ARGS=-lgcc
-OBJ=build/boot.o build/kernel.o build/gdt-s.o build/gdt-c.o
+OBJ=build/boot.o build/kernel.o build/gdt.o build/idt.o build/utilities.o
 
 build/snakeos32.iso: build/snakeos32.bin grub.cfg
 	mkdir -p build/isodir/boot/grub
@@ -11,12 +10,15 @@ build/snakeos32.iso: build/snakeos32.bin grub.cfg
 	grub-mkrescue -o build/snakeos32.iso build/isodir
 
 build/boot.o: boot.s
-	$(AS) boot.s -o build/boot.o
+	$(CC) -c $^ -o $@ $(COMPILER_ARGS)
 
-build/gdt-s.o: gdt.s
-	$(AS) gdt.s -o build/gdt-s.o
+build/utilities.o: utilities.c
+	$(CC) -c $^ -o $@ $(COMPILER_ARGS)
 
-build/gdt-c.o: gdt.c
+build/gdt.o: gdt.c
+	$(CC) -c $^ -o $@ $(COMPILER_ARGS)
+
+build/idt.o: idt.c
 	$(CC) -c $^ -o $@ $(COMPILER_ARGS)
 
 build/kernel.o: kernel.c

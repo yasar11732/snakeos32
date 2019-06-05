@@ -1,6 +1,7 @@
 #include <stdbool.h>
 #include <stddef.h>
 #include <stdint.h>
+#include "kernel.h"
  
 /* Check if the compiler thinks you are targeting the wrong operating system. */
 #if defined(__linux__)
@@ -126,11 +127,27 @@ void terminal_writestring(const char* data)
 {
 	terminal_write(data, strlen(data));
 }
- 
+
+void bsod()
+{
+	terminal_row = 0;
+	terminal_column = 0;
+	terminal_color = vga_entry_color(VGA_COLOR_LIGHT_GREY, VGA_COLOR_BLUE);
+	terminal_buffer = (uint16_t*) 0xB8000;
+	for (size_t y = 0; y < VGA_HEIGHT; y++) {
+		for (size_t x = 0; x < VGA_WIDTH; x++) {
+			const size_t index = y * VGA_WIDTH + x;
+			terminal_buffer[index] = vga_entry(' ', terminal_color);
+		}
+	}
+}
+
 void kernel_main(void) 
 {
 	gdt_install();
-	
+	idt_install();
+	enable_interrupts();
+
 	/* Initialize terminal interface */
 	terminal_initialize();
  
@@ -142,4 +159,5 @@ void kernel_main(void)
     terminal_writestring("Hello, kernel World!\r\n");
 
     terminal_writestring("Hello, kernel World!\r\n");
+	
 }
