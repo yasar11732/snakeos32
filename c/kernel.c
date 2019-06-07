@@ -145,28 +145,31 @@ void bsod(char *message)
 	wait_forever();
 }
 
-extern void enable_interrupts();
-
 void kernel_main(void) 
 {
 	gdt_install();
 	idt_install();
+	irq_init();
 	
-	enable_interrupts();
+	timer_ticks = 0;
+
+	timer_phase(1000);
+
+	enable_interrupts(1);
 
 	/* Initialize terminal interface */
 	terminal_initialize();
  
 	/* Newline support is left as an exercise. */
 	terminal_writestring("Hello, kernel World!\r\n");
-
+	
+	delay(2000);
     terminal_writestring("Hello, kernel World!\r\n");
 	
-	__asm__ ("mov $0,%ebx");
-	__asm__ ("div %ebx");
-
+	delay(2000);
     terminal_writestring("Hello, kernel World!\r\n");
-
+	
+	delay(2000);
     terminal_writestring("Hello, kernel World!\r\n");
 	
 }

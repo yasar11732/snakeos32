@@ -1,5 +1,5 @@
 CC=/root/opt/cross/bin/i686-elf-gcc
-COMPILER_ARGS=-I./h -g -ffreestanding -O2 -nostdlib -Wall -Wextra
+COMPILER_ARGS=-I./h -g -ffreestanding -O2 -nostdlib -Wall -Wextra -Werror
 LINKER_ARGS=-lgcc
 SRCC=$(wildcard c/*.c)
 SRCS=$(wildcard s/*.s)

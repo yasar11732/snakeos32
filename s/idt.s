@@ -6,17 +6,6 @@ idt_load:
 	lidt idtp
 	ret
 
-.global enable_interrupts
-.type enable_interrupts,@function
-enable_interrupts:
-    sti
-    ret
-
-.global wait_forever
-.type wait_forever,@function
-wait_forever:
-    hlt
-    jmp wait_forever
 .global int0
 .type int0,@function
 .align 4

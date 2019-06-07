@@ -29,7 +29,7 @@ extern void idt_load();
 
 /* Use this function to set an entry in the IDT. Alot simpler
 *  than twiddling with the GDT ;) */
-void idt_set_gate(unsigned char num, unsigned long base, unsigned short sel, unsigned char flags)
+void idt_set_gate(unsigned char num, void *base, unsigned short sel, unsigned char flags)
 {
     /* We'll leave you to try and code this function: take the
     *  argument 'base' and split it up into a high and low 16-bits,
@@ -37,8 +37,8 @@ void idt_set_gate(unsigned char num, unsigned long base, unsigned short sel, uns
     *  fields that you must set in idt[num] are fairly self-
     *  explanatory when it comes to setup */
    idt[num].always0 = 0;
-   idt[num].base_lo = (base & 0xFFFF);
-   idt[num].base_hi = (base >> 16 & 0xFFFF);
+   idt[num].base_lo = ((unsigned long)base & 0xFFFF);
+   idt[num].base_hi = ((unsigned long)base >> 16 & 0xFFFF);
    idt[num].sel = sel;
    idt[num].flags = flags;
 
@@ -64,15 +64,31 @@ extern void int16();
 extern void int17();
 extern void int18();
 extern void reserved();
+extern void irq0();
+extern void irq1();
+extern void irq2();
+extern void irq3();
+extern void irq4();
+extern void irq5();
+extern void irq6();
+extern void irq7();
+extern void irq8();
+extern void irq9();
+extern void irq10();
+extern void irq11();
+extern void irq12();
+extern void irq13();
+extern void irq14();
+extern void irq15();
+
 
 
 /* Installs the IDT */
 void idt_install()
 {
-    int i = 0;
     /* Sets the special IDT pointer up, just like in 'gdt.c' */
     idtp.limit = (sizeof (struct idt_entry) * 256) - 1;
-    idtp.base = &idt;
+    idtp.base = (unsigned int)&idt;
 
     /* Clear out the entire IDT, initializing it to zeros */
     memset(&idt, 0, sizeof(struct idt_entry) * 256);
@@ -110,7 +126,22 @@ void idt_install()
     idt_set_gate(29, reserved, 0x08, 0x8E);
     idt_set_gate(30, reserved, 0x08, 0x8E);
     idt_set_gate(31, reserved, 0x08, 0x8E);
-
+    idt_set_gate(32, irq0, 0x08, 0x8E);
+    idt_set_gate(33, irq1, 0x08, 0x8E);
+    idt_set_gate(34, irq2, 0x08, 0x8E);
+    idt_set_gate(35, irq3, 0x08, 0x8E);
+    idt_set_gate(36, irq4, 0x08, 0x8E);
+    idt_set_gate(37, irq5, 0x08, 0x8E);
+    idt_set_gate(38, irq6, 0x08, 0x8E);
+    idt_set_gate(39, irq7, 0x08, 0x8E);
+    idt_set_gate(40, irq8, 0x08, 0x8E);
+    idt_set_gate(41, irq9, 0x08, 0x8E);
+    idt_set_gate(42, irq10, 0x08, 0x8E);
+    idt_set_gate(43, irq11, 0x08, 0x8E);
+    idt_set_gate(44, irq12, 0x08, 0x8E);
+    idt_set_gate(45, irq13, 0x08, 0x8E);
+    idt_set_gate(46, irq14, 0x08, 0x8E);
+    idt_set_gate(47, irq15, 0x08, 0x8E);
 
     /* Points the processor's internal register to the new IDT */
     idt_load();
