@@ -1,4 +1,8 @@
-CC=/root/opt/cross/bin/i686-elf-gcc
+ifneq ("$(wildcard /root/opt/cross/bin/i686-elf-gcc)","")
+    CC = /root/opt/cross/bin/i686-elf-gcc
+else
+    CC = i686-elf-gcc
+endif
 COMPILER_ARGS=-I./h -g -ffreestanding -O2 -nostdlib -Wall -Wextra -Werror
 LINKER_ARGS=-lgcc
 SRCC=$(wildcard c/*.c)
